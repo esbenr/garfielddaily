@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      var pageNumberKey = "pageNumber"
+      var pageSizeKey = "pageSize"
+
+      $(function() {
+        $("#prev").click(function() {
+          prevPage()
+          clearStrips()
+          getStrips()
+        })
+
+        $("#next").click(function() {
+          nextPage()
+          clearStrips()
+          getStrips()
+        })
+        getStrips()
+        var pageNumberValue = getPageNumber()
+        $("#page").html(pageNumberValue)
+        console.log(pageNumberValue)
+      })
+
+      function clearStrips() {
+        $("#strips").html('')
+      }
+
+      function getStrips() {
+        var daysToOffset = (getPageNumber() - 1) * getPageSize()
+
+        for (i = 0; i < getPageSize(); i++) {
+          var stripOffset = daysToOffset + i
+          getStrip(stripOffset)
+        }
+      }
+
+      function getStrip(offset) {
+        var initialDate = new Date("1978-06-19")
+        var date = new Date(initialDate)
+        date.setDate(date.getDate() + offset)
+
+        var url = getUrl(date)
+
+        $("#strips").append("<img src='" + url + "' />")
+
+        console.log(url)
+      }
+
+      function nextPage() {
+        var pageNumberValue = getPageNumber()
+        pageNumberValue++
+
+        localStorage.setItem(pageNumberKey, pageNumberValue)
+        $("#page").html(pageNumberValue)
+        console.log(pageNumberValue)
+      }
+
+      function prevPage() {
+        var pageNumberValue = getPageNumber()
+        if (pageNumberValue > 1) {
+          pageNumberValue--
+        } else {
+          pageNumberValue = 1
+        }
+
+        localStorage.setItem(pageNumberKey, pageNumberValue)
+        $("#page").html(pageNumberValue)
+        console.log(pageNumberValue)
+      }
+
+      function getPageNumber() {
+        var pageNumberValue = localStorage.getItem(pageNumberKey)
+        if (pageNumberValue == undefined) {
+          pageNumberValue = 1
+          localStorage.setItem(pageNumberKey, pageNumberValue)
+        }
+        return pageNumberValue
+      }
+
+      function getPageSize() {
+        var pageSizeValue = localStorage.getItem(pageSizeKey)
+        if (pageSizeValue == undefined) {
+          pageSizeValue = 5
+          localStorage.setItem(pageSizeKey, pageSizeValue);
+        }
+        return pageSizeValue
+      }
+
+      function getUrl(date) {
+        return 'https://d1ejxu6vysztl5.cloudfront.net/comics/garfield/' + date.getFullYear() + '/' + formatDate(date) + '.gif'
+      }
+
+      function formatDate(date) {
+        var d = new Date(date),
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+      }
+    </script>
+  </head>
+  <body>
+    <div id="content">
+      <div id="strips">
+
+      </div>
+      <div id="pager">
+        <span id="prev">Prev</span>
+        <span id="page"></span>
+        <span id="next">Next</span>
+      </div>
+    </div>
+  </body>
+</html>
